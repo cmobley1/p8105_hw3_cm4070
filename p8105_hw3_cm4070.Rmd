@@ -60,13 +60,35 @@ There are approximately 134 aisles. The aisles most ordered from are fresh veget
 
 ```{r}
 popular_items =
-  instacart %>% 
+  instacart %>%
   group_by(aisle, product_name) %>% 
   filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>%
   summarize(n_obs = n()) %>%
   arrange(desc(n_obs)) %>%
   slice(1:3) %>%
-  knitr::kable(digits = 1))
-  popular_items
+  knitr::kable(digits = 1)
+popular_items
 ```
 
+This table shows the top 3 most ordered products within baking ingredients, dog food care, and packaged vegetable fruits aisles, and number of times they were ordered.
+
+### Mean hour table - Pink Lady Apples and Coffee Ice Cream
+
+```{r}
+instacart %>%
+  select(product_name, order_dow, order_hour_of_day) %>%
+  filter(product_name == "Pink Lady Apples" | product_name == "Coffee Ice Cream") %>%
+  group_by(product_name, order_dow) %>%
+  summarize(
+    mean_hour_of_day = mean(order_hour_of_day)) %>%
+  mutate(order_dow = 
+           recode(order_dow,
+                  "0" = "monday", "1" = "tuesday","2" = "wednesday", "3" = "thursday", "4" = "friday", "5" = "saturday","6" = "sunday")) %>%
+    pivot_wider(
+    names_from = order_dow,
+    values_from = mean_hour_of_day) %>%
+    knitr::kable(digits = 1)
+```
+
+This table shows the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are 
+ordered  on each day of the week. 
