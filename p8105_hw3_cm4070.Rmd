@@ -95,13 +95,30 @@ ordered  on each day of the week.
 
 ## Question 2
 
-### Clean the BRFSS Data set
+### Clean the BRFSS Data set & build plots
 
-```{r}
-brfss_df = 
-  brfss_smart2010 %>% 
+```{r, warning= FALSE}
+brfss = brfss_smart2010 %>% 
   janitor::clean_names() %>% 
   filter(topic %in% "Overall Health" & response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% 
   mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good", "Very good", "Excellent"))
-  )
+  ) %>%
+  filter(year == 2002) %>%
+  separate(locationdesc, into = c("state", "county", convert = TRUE)) %>%
+  group_by(state, county)  %>%
+  distinct(county, .keep_all = TRUE)
 ```
+
+```{r, warning= FALSE}
+brfss2 = brfss_smart2010 %>% 
+  janitor::clean_names() %>% 
+  filter(topic %in% "Overall Health" & response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% 
+  mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good", "Very good", "Excellent"))
+  ) %>%
+  filter(year == 2010) %>%
+  separate(locationdesc, into = c("state", "county", convert = TRUE)) %>%
+  group_by(state, county)  %>%
+  distinct(county, .keep_all = TRUE)
+```
+
+It appears that 3 states in 2002 had more than 7 locations, and in 2010 about 10 had more than 7 locations.
