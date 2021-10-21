@@ -126,7 +126,7 @@ brfss_df %>%
 It appears that 3 states in 2002 had more than 7 locations, and in 2010 about 10 had more than 7 locations.
 
 
-## Problem 3
+## Question 3
 
 #### Load, tidy, and wrangle the data
 
@@ -154,4 +154,7 @@ accel_data %>%
 
 There does not appear to be a major pattern to the physical exercise values across the course of the week. Although, the weekend Saturday especially appears to have a lower mean physical activity measure than the other dats, which may indicate that this day is more relaxed and or the individual was less likely to be wearing his exercise band. 
 
-#####
+#### Single-panel plot 24hour time period
+
+```{r}
+accel_data 
