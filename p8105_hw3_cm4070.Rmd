@@ -97,20 +97,22 @@ ordered  on each day of the week.
 
 ### Clean the BRFSS Data set & build plots
 
-```{r, warning= FALSE}
-brfss = brfss_smart2010 %>% 
+```{r}
+brfss_df = brfss_smart2010 %>% 
   janitor::clean_names() %>% 
   filter(topic %in% "Overall Health" & response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% 
   mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good", "Very good", "Excellent"))
-  ) %>%
+  )
+```
+
+```{r}
+brfss_df %>%
   filter(year == 2002) %>%
   separate(locationdesc, into = c("state", "county", convert = TRUE)) %>%
   group_by(state, county)  %>%
   distinct(county, .keep_all = TRUE)
-```
 
-```{r, warning= FALSE}
-brfss2 = brfss_smart2010 %>% 
+brfss_df %>%
   janitor::clean_names() %>% 
   filter(topic %in% "Overall Health" & response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% 
   mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good", "Very good", "Excellent"))
@@ -122,3 +124,34 @@ brfss2 = brfss_smart2010 %>%
 ```
 
 It appears that 3 states in 2002 had more than 7 locations, and in 2010 about 10 had more than 7 locations.
+
+
+## Problem 3
+
+#### Load, tidy, and wrangle the data
+
+```{r}
+accel_data = 
+  read_csv("./accel_data.csv") %>%
+  janitor::clean_names() %>%
+  rename_with(~str_replace(., "activity_", paste0("minute_"))) %>%
+  mutate(weekend_vs_weekday = recode(day, "Friday" = "Weekday", "Monday" = "Weekday", "Tuesday" = "Weekday","Wednesday" = "Weekday", "Thursday" = "Weekday", "Saturday" = "Weekend", "Sunday" = "Weekend"))
+```
+  
+The `accel_data`  has `r nrow(accel_data)` observations and `r ncol(accel_data)` variables and key variable names are week, day_id, day, minute_1-minute1400, weekend v.s. weekday variable. These data tells us about the average physical activity of a 63 year old man wih a BMI of 25 who was diagnosed with congestive heart failure for every minute of a 24 hour day. 
+
+#### Aggregate across minutes for total activity daily
+
+```{r}
+accel_data %>%
+  rowwise() %>%
+  mutate(total = sum(across(minute_1:minute_1440))) %>%
+  select(day_id, day, total) %>%
+  group_by(day) %>%
+  summarize(mean(total)) %>%
+  knitr::kable(digits = 1)
+```
+
+There does not appear to be a major pattern to the physical exercise values across the course of the week. Although, the weekend Saturday especially appears to have a lower mean physical activity measure than the other dats, which may indicate that this day is more relaxed and or the individual was less likely to be wearing his exercise band. 
+
+#####
