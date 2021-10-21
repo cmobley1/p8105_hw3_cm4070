@@ -92,3 +92,16 @@ instacart %>%
 
 This table shows the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are 
 ordered  on each day of the week. 
+
+## Question 2
+
+### Clean the BRFSS Data set
+
+```{r}
+brfss_df = 
+  brfss_smart2010 %>% 
+  janitor::clean_names() %>% 
+  filter(topic %in% "Overall Health" & response %in% c("Excellent", "Very good", "Good", "Fair", "Poor")) %>% 
+  mutate(response = forcats::fct_relevel(response, c("Poor", "Fair", "Good", "Very good", "Excellent"))
+  )
+```
