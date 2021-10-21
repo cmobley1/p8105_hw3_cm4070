@@ -3,8 +3,9 @@ title: "p8105_hw3_cm4070"
 output: github_document
 ---
 
-```{r, eval = FALSE}
+```{r loadlibraries_plots}
 library(tidyverse)
+library(patchwork)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -35,4 +36,23 @@ data("instacart")
 
 There are `r nrow(instacart)` observations and `r ncol(instacart)` variables, and key variable names are `r names(instacart)` in the `instacart` data. 
 
-  
+### Describe aisles with plot
+
+```{r}
+instacart %>% 
+  count(aisle, name = "n_columns") %>% 
+  arrange(desc(n_columns)) %>% 
+  filter(n_columns > 10000) %>% 
+  mutate(aisle = forcats::fct_reorder(aisle, n_columns)) %>% 
+  ggplot(aes(x = n_columns, y = aisle, color = aisle)) + geom_point() +
+  labs(title = "Aisles' Popularity plot", 
+    x = "number of items ordered in each aisle",
+    y = "aisle name",
+    caption = "Data from “The Instacart Online Grocery Shopping Dataset 2017"
+    ) +
+    scale_x_continuous(
+      limits = c(10000, 170000))
+```
+
+There are approximately 134 aisles. The aisles most ordered from are fresh vegetables, fresh fruits, and packaged vegetables and fruits. We can see this in the above plot where we see the number of items ordered in each aisle with its respective name and the values at approximately 150000 values are those most popular.
+
